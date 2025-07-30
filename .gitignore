@@ -1,0 +1,27 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+
+# SQLite database
+*.db
+
+# Environment variables
+.env
+
+# VS Code settings (optional)
+.vscode/
+
+# macOS files (if relevant)
+.DS_Store
+
+# Logs
+*.log
+
+# Python specific
+*.egg-info/
+dist/
+build/
