@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class ProductBase(BaseModel):
@@ -38,8 +38,10 @@ class ProductResponse(ProductBase):
         from_attributes = True
 
 class PaginatedResponse(BaseModel):
-    data: list[ProductResponse]
+    data: List[ProductResponse]
     total: int
     page: int
     limit: int
     total_pages: int
+class BulkUploadRequest(BaseModel):
+    products: List[ProductCreate]

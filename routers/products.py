@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 import crud
 import schemas
 from database import get_db
@@ -76,3 +76,24 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 def get_categories(db: Session = Depends(get_db)):
     categories = crud.get_categories(db)
     return [cat[0] for cat in categories if cat[0]]
+
+@router.post("/products/bulk-upload")
+def bulk_upload_products(products: schemas.BulkUploadRequest, db: Session = Depends(get_db)):
+    try:
+        created_products = []
+        for product in products.products:
+            if product.category not in [cat[0] for cat in crud.get_categories(db) if cat[0]]:
+                raise ValueError(f"Invalid category: {product.category}")
+            created_product = crud.create_product(db=db, product=product)
+            created_products.append(created_product)
+        db.commit()
+        return {
+            "message": "Products uploaded successfully",
+            "count": len(created_products)
+        }
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to upload products: {str(e)}")
